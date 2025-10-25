@@ -35,5 +35,5 @@ jobs:
 
       - name: Run tests & coverage
         run: |
-          coverage run --source=src/risk-tribe -m pytest tests/
+          coverage run --source=src/risk_tribe -m pytest tests/
           coverage report -m
