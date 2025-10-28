@@ -1,0 +1,43 @@
+name: Terraform
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5  # specify your required version
+          # cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }} # optional (for Terraform Cloud)
+
+      - name: Terraform Init
+        run: | 
+          cd infra/terraform
+          terraform init
+
+
+      - name: Terraform Validate
+        run: |
+          cd infra/terraform
+          terraform validate
+
+      - name: Terraform Plan
+        run: |
+          cd infra/terraform
+          terraform plan
+
+      # Optional: apply on main branch only
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: |
+          cd infra/terraform
+          terraform apply -auto-approve

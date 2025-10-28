@@ -1,0 +1,9 @@
+typer==0.15.2
+fastapi==0.115.12
+uvicorn==0.34.2
+black==25.9.0
+isort==7.0.0
+ruff==0.1.10
+mypy==1.8.0
+coverage==7.11.0
+pytest==8.4.2
