@@ -1,0 +1,81 @@
+name: Terraform
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: infra/terraform
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # --------------
+      # Github Secrets
+      # --------------
+      - name: Check required secrets
+        run: |
+          if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ] || [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ] || [ -z "${{ secrets.AWS_REGION }}" ]; then
+            echo "ERROR: AWS secrets are not set in this repository!"
+            echo "Please add AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_REGION in GitHub Settings → Secrets."
+            exit 1
+          fi
+
+      # ---------------
+      # AWS Credentials
+      # ---------------
+      - name: Check AWS CLI configuration
+        run: |
+          if ! aws sts get-caller-identity >/dev/null 2>&1; then
+            echo "ERROR: AWS CLI is not configured or credentials are invalid!"
+            echo "Run 'aws configure' locally or set the appropriate GitHub secrets."
+            exit 1
+          fi
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          # If you want to use default profile from Terraform:
+          # role-to-assume: <arn>
+          # role-session-name: terraform
+
+      # ---------------
+      # Terraform Setup
+      # ---------------
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.8.0
+
+      - name: Terraform Format
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -input=false
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -input=false -auto-approve
