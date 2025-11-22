@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v6.0.0
     hooks:
     -   id: no-commit-to-branch
     -   id: trailing-whitespace
@@ -12,7 +12,7 @@ repos:
 
     repos:
 -   repo: https://github.com/jorisroovers/gitlint
-    rev: v0.19.0
+    rev: v0.19.1
     hooks:
     -   id: gitlint
         stages: [commit-msg]
@@ -21,28 +21,28 @@ repos:
 
     # Black for formatting
 -   repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 25.11.0
     hooks:
     -   id: black
         language_version: python3.11
 
     # isort for import sorting
 -   repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+    rev: 7.0.0
     hooks:
     -   id: isort
         language_version: python3.11
 
     # ruff for linting (includes flake8-style checks)
 -   repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.1.0
+    rev: v0.14.6
     hooks:
     -   id: ruff
         args: ["--fix"]  # optional: auto-fix on commit
 
     # mypy for static type checking
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.5.1
+    rev: v1.18.2
     hooks:
     -   id: mypy
         additional_dependencies: ["types-requests"] # optional
